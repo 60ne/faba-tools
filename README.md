@@ -54,7 +54,7 @@ You can manually add .mp3 files to an existing playlist (character) or create a 
 
 ### Add Songs to an Existing Playlist
 1. Create a local backup of the microSD content.
-2. Identify or read the character ID of an existing NFC tag (e.g., `019`0 for the FABA Me White robot).
+2. Identify or read the character ID of an existing NFC tag (e.g., `0190` for the FABA Me White robot).
 3. Browse to the corresponding folder on the microSD card (e.g., `PLAYER\K0190`) and check the last file name (e.g., `02.faba`). The next file should be numbered 03.faba.
 4. Place the new .mp3 files you want to add in a folder and number the filenames accordingly. Run the `mp32faba.sh` script:
 ```bash
