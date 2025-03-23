@@ -81,13 +81,23 @@ The  `mp32faba.sh` script uses eyeD3 to edit mp3 ID3 tags. To install it, run:
 pip install eyeD3
 ```
 
-## NFC Tags
-Custom characters can be created using compatible NFC tags. The following tags have been tested and are supported: NTAG213, NTAG215, and NTAG216.
+
+## Custom NFC Tags
+Custom characters can be created using compatible NFC tags. The following tags have been tested and are supported: NTAG203, NTAG213, NTAG215, and NTAG216.
 
 ### Read and Write NFC Tags
 TBD
 
 
-## Remote Access to Faba+ micoSD
-TBD
 
+## Hardware Hacks
+
+### Remote Access to Faba+ microSD
+Managing custom audio content on the Faba+ requires access to the microSD card, but disassembling the device each time is not ideal. The firmware does not include a setting to enable USB mass storage, and while the Faba Me cloud functionality works, it is limited - especially when using custom NFC tags.
+One option would be to relocate the microSD card slot by creating a hole in the case and using an extension cable. However, this is not recommended, as the microSD card could be easily removed, lost, or even swallowed.
+
+So, I came up with my own over-engineered solution: a custom PCB that controls access to the microSD card and makes its contents manageable remotely via Wi-Fi. The custom PCB fits on top of the Faba+ board, requires no additional power supply, and can be manually switched on only when needed by placing a magnet on the case - eliminating the need for an external switch.
+
+I currently have a working prototype and am finalizing the design and code.
+
+![prototype](https://github.com/60ne/faba-tools/blob/main/images/pcb_prototype.jpg?raw=true)
