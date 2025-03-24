@@ -98,6 +98,7 @@ One option would be to relocate the microSD card slot by creating a hole in the 
 
 So, I came up with my own over-engineered solution: a custom PCB that controls access to the microSD card and makes its contents manageable remotely via Wi-Fi. The custom PCB fits on top of the Faba+ board, requires no additional power supply, and can be manually switched on only when needed by placing a magnet on the case - eliminating the need for an external switch.
 
-I currently have a working prototype and am finalizing the design and code.
-
-![prototype](https://github.com/60ne/faba-tools/blob/main/images/pcb_prototype.jpg?raw=true)
+I currently have a working prototype and finalizing the design and code.
+<p align="center">
+<img src="https://github.com/60ne/faba-tools/blob/main/images/pcb_prototype.jpg?raw=true" width="490" height="410"/>
+</p>
