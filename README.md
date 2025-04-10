@@ -105,6 +105,10 @@ I currently have a working prototype and finalizing the design and code.
   <i>Faba remote access board - Prototype v2</i>
 </p>
 
+> [!NOTE]
+> The custom PCB checks whether the microSD card is currently in use by the Faba+ box before disconnecting it and making it available via WebDAV. The WebDAV interface is only activated when the Faba+ box is turned off (sleep mode).\
+> It is recommended to stop the WebDAV server before turning the Faba+ box back on.
+
 Terminal output:
 
 ```
