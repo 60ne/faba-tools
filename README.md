@@ -101,7 +101,7 @@ So, I came up with my own over-engineered solution: a custom PCB that controls a
 I currently have a working prototype and finalizing the design and code.
 
 <p align="center">
-  <img src="https://github.com/60ne/faba-tools/blob/main/images/pcb_prototype.jpg?raw=true" width="490" height="410"/><br/>
+  <img src="https://github.com/60ne/faba-tools/blob/main/images/pcb_prototype.jpg?raw=true" width="490"/><br/>
   <i>Faba remote access board - Prototype v2</i>
 </p>
 
