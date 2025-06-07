@@ -86,9 +86,20 @@ pip install eyeD3
 Custom characters can be created using compatible NFC tags. The following tags have been tested and are supported: NTAG203, NTAG213, NTAG215, and NTAG216.
 
 ### Read and Write NFC Tags
-TBD
+The script `faba_ntag.py` can be use to read, dump, edit, erase, and create NTAG2xx compatible with Faba+.
+```bash
+usage: faba_ntag.py [-h] [-r | -w ID | -d | -e] [-c UID TYPE ID] [-p PORT] [-v]
 
-
+options:
+  -h, --help                             Show this help message and exit
+  -r, --read                             Read NTAG and decode Faba folder ID
+  -w ID, --write ID                      Write NTAG with Faba folder ID (4-digit ID)
+  -d, --dump                             Dump NTAG content and save to Flipper Zero (.nfc) and NXP TagWriter (.ndef)
+  -e, --erase                            Erase NTAG restoring default values
+  -c UID TYPE ID, --create UID TYPE ID   Create manually Flipper Zero (.nfc) file. Requires UID (7-byte hex), TYPE (NTAG203/213/215/216), ID (4-digit)
+  -p PORT, --port PORT                   NFC reader serial port (e.g. COM1 or /dev/ttyUSB0)
+  -v                                     Enable debug logging
+```
 
 ## Hardware Hacks
 
