@@ -4,8 +4,8 @@
 # Usage:        python3 faba_ntag.py [-h] [-r | -w ID | -d | -e] [-c UID TYPE ID] [-p PORT] [-v]
 #
 # Author:       60ne https://github.com/60ne/
-# Date:         2025-06-01
-# Version:      0.8
+# Date:         2025-06-07
+# Version:      0.9
 #
 # This script is provided "as is" without warranty of any kind.
 #
@@ -421,6 +421,7 @@ def dump_ntag(byte_array, ntag):
         
         logging.info(f"Saving files")
 
+        save_raw(byte_array, filename)
         save_ndef(byte_array, filename)
         save_flipper(byte_array, ntag, filename)
 
@@ -429,11 +430,80 @@ def crete_ntag(uid, type, id):
     logging.info(f"  UID:    {' '.join([f'{byte:02X}' for byte in uid])}")
     logging.info(f"  Type:   {type}")
     logging.info(f"  FabaID: {id}")
-    logging.error("Function not implemented yet")
+
+    if len(uid) != 7:
+        raise ValueError("UID must be exactly 7 bytes")
+
+    CT = 0x88 # Cascade tag fixed byte
+    bcc0 = CT ^ uid[0] ^ uid[1] ^ uid[2]
+    bcc1 = uid[3] ^ uid[4] ^ uid[5] ^ uid[6]
+
+    page00 = [uid[0], uid[1], uid[2], bcc0]
+    page01 = [uid[3], uid[4], uid[5], uid[6]]
+    page02 = [bcc1, 0x48, 0x00, 0x00]
+
+    ntag_specs = {
+        "NTAG203": {"capc": 0x12, "mlen": 0x6D, "ntag_size": 42},
+        "NTAG213": {"capc": 0x12, "mlen": 0xA0, "ntag_size": 45},
+        "NTAG215": {"capc": 0x3E, "mlen": 0xE0, "ntag_size": 135},
+        "NTAG216": {"capc": 0x6D, "mlen": 0xFA, "ntag_size": 231},
+    }
+
+    if type not in ntag_specs:
+        raise ValueError(f"Unsupported tag type: {type}")
+
+    spec = ntag_specs[type]
+
+    page03 = [0xE1, 0x10, spec["capc"], 0x00]
+    page04 = [0x01, 0x03, spec["mlen"], 0x0C]
+    
+    # Create NTAGData instance and assign properties
+    ntag = NTAGData()
+    ntag.uid = uid
+    ntag.type = type
+    ntag.size = spec["ntag_size"]
+    ntag.add_page(0, page00)
+    ntag.add_page(1, page01)
+    ntag.add_page(2, page02)
+    ntag.add_page(3, page03)
+    ntag.add_page(4, page04)
+
+    text = encode_faba_id(id)
+    logging.debug(f" Encoded FabaID: {text}")
+    byte_array = create_byte_array(text, ntag)
+    print_byte_array(byte_array)
+    dump_ntag(byte_array, ntag)
+
+
+def save_raw(byte_array, filename):
+    filename = f"{filename}.raw"
+
+    try:
+        lines = []
+
+        for i in range(0, len(byte_array), 4):
+            chunk = byte_array[i:i+4]
+            if len(chunk) < 4:
+                chunk += [0] * (4 - len(chunk))  # Pad incomplete pages
+            hex_part = ''.join(f'{byte:02X}' for byte in chunk)
+            lines.append(f"{hex_part:<8}")
+
+
+        with open(filename, "w", encoding="utf-8") as f:
+            f.write("\n".join(lines))
+
+        logging.info(f"  RAW             : {filename}")
+        return True
+
+    except OSError as e:
+        logging.error(f"Failed to write file {filename}: {e}")
+    except Exception as e:
+        logging.error(f"Unexpected error: {e}")
+
+    return False
 
 
 def save_ndef(byte_array, filename):
-
     ndef_bytes = byte_array[23:44]
     hex_string = ''.join(f'{byte:02x}' for byte in ndef_bytes)
 
@@ -442,13 +512,13 @@ def save_ndef(byte_array, filename):
     try:
         with open(filename, 'w', encoding='utf-8') as f:
             f.write(f"<NdefMessage>{hex_string}</NdefMessage>")
-        logging.info(f"  NDEF file saved: {filename}")
+        logging.info(f"  NDEF            : {filename}")
         return True
         
     except OSError as e:
         logging.error(f"Failed to write to file {filename}: {e}")
     except Exception as e:
-        logging.error(f"Unexpected error saving NDEF file: {e}")
+        logging.error(f"Unexpected error: {e}")
 
     return False
 
@@ -494,13 +564,13 @@ def save_flipper(byte_array, ntag, filename):
         with open(filename, "w", encoding="utf-8") as f:
             f.write("\n".join(lines))
 
-        logging.info(f"  Flipper Zero NFC file saved: {filename}")
+        logging.info(f"  Flipper Zero NFC: {filename}")
         return True
 
     except OSError as e:
         logging.error(f"Failed to write file {filename}: {e}")
     except Exception as e:
-        logging.error(f"Unexpected error in save_flipper(): {e}")
+        logging.error(f"Unexpected error: {e}")
 
     return False
 
