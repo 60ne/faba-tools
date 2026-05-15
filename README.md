@@ -87,6 +87,9 @@ Custom characters can be created using compatible NFC tags. The following tags h
 
 ### Read and Write NFC Tags
 The script `faba_ntag.py` can be use to read, dump, edit, erase, and create NTAG2xx compatible with Faba+.
+
+This script requires `pyserial` and `adafruit-circuitpython-pn532` that can be installed using `pip`.
+
 ```bash
 usage: faba_ntag.py [-h] [-r | -w ID | -d | -e] [-c UID TYPE ID] [-p PORT] [-v]
 
