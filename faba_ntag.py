@@ -728,7 +728,7 @@ def main():
         # Non-create mode requires port
         if not args.port:
             logging.error("Serial port (-p) is required")
-            return False
+            raise SystemExit(1)
 
         ports = [port.device for port in serial.tools.list_ports.comports()]
         if args.port not in ports:
