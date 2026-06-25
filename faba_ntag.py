@@ -44,12 +44,19 @@
 import re
 import time
 import string
-import serial
 import logging
 import argparse
 import binascii
-import serial.tools.list_ports
-from adafruit_pn532.uart import PN532_UART
+try:
+    import serial
+    import serial.tools.list_ports
+except ModuleNotFoundError:
+    raise ModuleNotFoundError("Importing +serial+ or +serial.tools.list_ports+ failed. Please install the +pyserial+ module using pip (and uninstall the +serial+ module if installed).") from None
+try:
+    from adafruit_pn532.uart import PN532_UART
+except ModuleNotFoundError:
+    raise ModuleNotFoundError("Importing +PN532_UART+ from +adafruit_pn532.uart+ failed. Please install the +adafruit-circuitpython-pn532+ module using pip.") from None
+
 
 VALID_TAG_TYPES = {"NTAG203", "NTAG213", "NTAG215", "NTAG216"}
 
@@ -720,8 +727,8 @@ def main():
 
         # Non-create mode requires port
         if not args.port:
-            logging.error("Serial port (-p) is required")
-            return False
+            logging.error("Serial port (-p PORT) or create mode (-c) is required. See --help for more options.")
+            raise SystemExit(1)
 
         ports = [port.device for port in serial.tools.list_ports.comports()]
         if args.port not in ports:
