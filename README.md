@@ -2,29 +2,37 @@
 
 This repository contains tools to personalize and expand your Faba+ (and MyFaba) experience.
 
-## Upload Custom .wav Audio Using Faba Me Cloud
+## Upload Custom Audio Using Faba Me Cloud
 
-Using the Faba Me sharing functionality, you can upload a .wav file directly to the MyFaba cloud and associate it with your Faba Me robots (white, blue, or red).
+Using the Faba Me sharing functionality, you can upload a .wav or .mp3 file directly to the MyFaba cloud and associate it with your Faba Me robots (white, blue, or red).
 
-To upload audio, you’ll need an “Invite to Record” URL link. To generate one from the MyFaba mobile app:
+To upload audio, you'll need an "Invite to Record" URL link. To generate one from the MyFaba mobile app:
 1. Select: _Faba Me_ > _FABA Me White_ (or Red/Blue)  
 2. Tap _+ Add New Track_ and select _Invite to Record_  
-3. Copy the last 10 characters of the URL generated (e.g., `8K3TzYl2WB` for `https://studio.myfaba.com/record/8K3TzYl2WB`) as `share_id`
+3. Copy the full URL generated (e.g., `https://studio.myfaba.com/it/invites/b92b4a71-19c7-486a-8114-9bdd1e6fe886?token=eyJhbGc...`)
 
-Use the following Python command to upload the file:
+Use the following Python command to upload the file, passing the full invite URL:
 
 ```bash
-python3 myfaba_upload.py [-h] <share_id> <author> <title> <wav_file>
+python3 myfaba_upload.py [-h] [-t TOKEN] <invite_url_or_id> <author> <title> <wav_or_mp3_file>
 ```
 e.g.:
 ```bash
-python3 myfaba_upload.py 8K3TzYl2WB "Author Name" "Audio Title" ./audio/test.wav
+python3 myfaba_upload.py "https://studio.myfaba.com/it/invites/b92b4a71-19c7-486a-8114-9bdd1e6fe886?token=eyJhbGc..." "Author Name" "Audio Title" ./audio/test.wav
 ```
+Alternatively, pass the bare `invitePublicId` (the UUID in the URL path) together with `-t TOKEN`:
+```bash
+python3 myfaba_upload.py b92b4a71-19c7-486a-8114-9bdd1e6fe886 "Author Name" "Audio Title" ./audio/test.wav -t eyJhbGc...
+```
+
 > [!NOTE]
 > The upload may take a few minutes, depending on your internet speed and file size. Once completed, you should receive a notification on the MyFaba mobile app.
 
+> [!IMPORTANT]
+> The invite token expires 90 minutes after it's generated, and the API caps uploads at **100MB**. For long recordings, prefer .mp3 over .wav to stay under the limit (a 100kbps stereo mp3 uses roughly 45MB/hour, vs. ~660MB/hour for uncompressed 48kHz .wav).
 
-### Converting .mp3 Files to .wav
+
+### Converting/Concatenating .mp3 Files
 To convert .mp3 files to .wav format, you can use these commands:
 - Using VLC:
 ```bash
@@ -33,6 +41,12 @@ vlc.exe --sout "#transcode{acodec=s16l,channels=2,samplerate=44100}:std{access=f
 - Using FFmpeg:
 ```bash
 ffmpeg -i ./audio/test.mp3 -acodec pcm_s16le -ac 2 -ar 44100 ./audio/test.wav
+```
+
+To concatenate multiple .mp3 files (e.g., numbered `01.mp3`, `02.mp3`, ...) into a single .mp3 without re-encoding, using FFmpeg:
+```bash
+for f in *.mp3; do echo "file '$PWD/$f'"; done | sort > list.txt
+ffmpeg -f concat -safe 0 -i list.txt -c copy combined.mp3
 ```
 
 ## Manually Adding Audio Files to Faba+
